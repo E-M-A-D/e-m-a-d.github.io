@@ -1585,7 +1585,7 @@ function update_radar_chart(chart_id, radar_cfg, country_name)
 
 }
 
-d3.csv("/data/2011_data.csv", function(data)
+d3.csv("data/2011_data.csv", function(data)
 {
     //Build world data
     world_2011_data = build_world_data(data);
