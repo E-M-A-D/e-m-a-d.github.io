@@ -410,7 +410,7 @@ function draw_map_by_year(data, year)
 
 
 //WORLD EMISSIONS HISTORICAL DATA. Call the update map every 750 ms
-d3.csv("/data/country_data.csv", function(data)
+d3.csv("data/country_data.csv", function(data)
 {
     country_emissions_data = data;
     //Do the animation
