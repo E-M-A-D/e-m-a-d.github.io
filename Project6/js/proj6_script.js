@@ -568,7 +568,7 @@ function get_country_profile_data(country_name)
                         {name: "gdp_per_capita", text: "GDP Per Capita", unit: "US$/Capita", value: data.gdp_per_capita, maximum : 101000},
                         {name: "co2_per_capita", text: "CO2 Per Capita", unit: "Tonnes/Capita", value: data.co2_per_capita, maximum : 44},
                         {name: "emissions_productivity", text: "Emissions Productivity", unit: "US$/T of CO2", value: emissions_productivity, maximum : 8000000},
-                        {name: "total_emissions", text: "Total Emssions", unit: "kT of CO2 Eq.", value: data.total_emissions, maximum : 12064260},
+                        {name: "total_emissions", text: "Total Emissions", unit: "kT of CO2 Eq.", value: data.total_emissions, maximum : 12064260},
 
                         ]
 
@@ -590,7 +590,7 @@ function init_country_profile_g(svg_elemet)
                                            .attr("id", "cp_name")
                                            .attr("x", 5)
                                            .attr("y", 55)
-                                           .text("World")
+                                           .text("World 2011")
                                            .attr("font-family", "sans-serif")
                                            .attr("font-size", "40px")
                                            .attr("fill", "black");
@@ -1084,7 +1084,7 @@ function update_country_profile(country)
     gdp_text_format = get_range_in_letters(data.gdp);
 
     //Update the country name, population and gdp texts
-    d3.selectAll("#cp_name").text(country);
+    d3.selectAll("#cp_name").text(country + " 2011");
     d3.selectAll("#cp_population").text( "Population: " + (data.population/population_text_format.divisor).toFixed(population_text_format.decimal_points) + population_text_format.range_str);
     d3.selectAll("#cp_gdp").text( "GDP: " + (data.gdp/gdp_text_format.divisor).toFixed(gdp_text_format.decimal_points) + gdp_text_format.range_str + " US$");
 
@@ -1340,7 +1340,7 @@ function init_sunburst_g(svg_elemet, sunburst_elem, fill_data)
                                    .append("text")
                                    .attr("x", 5)
                                    .attr("y", 10 + crp_svg_cfg.height/2)
-                                   .text("Electricity Generation by Source:")
+                                   .text("2011 Electricity Generation by Source:")
                                    .attr("font-family", "sans-serif")
                                    .attr("font-size", "20px")
                                    .attr("fill", "black");
@@ -1578,7 +1578,7 @@ function init_radar_axis(svg_div, svg_cfg, chart_id, radar_cfg, translate_x, tra
                              .append("text")
                              .attr("x", 5)
                              .attr("y", 15)
-                             .text("Fossil Fuel Usage by Sector:")
+                             .text("2011 Fossil Fuel Usage by Sector:")
                              .attr("font-family", "sans-serif")
                              .attr("font-size", "20px")
                              .attr("fill", "black");
