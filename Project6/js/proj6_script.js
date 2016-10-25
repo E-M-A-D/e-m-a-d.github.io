@@ -163,13 +163,15 @@ d3.json("js/maps/modified_map.json",
             var locked_over_country = {};
 
             map_svg.on("contextmenu", function()
-                                      {//On right click, unlock country values lock and start updating on hover
+                                      {//On right click, unlock country values lock and start updating on hover/
                                           if(country_lock == true)
                                           {
                                               d3.select(locked_over_country)
                                                 .style("stroke", "grey")
                                                 .style("stroke-width", "0.25px");
 
+                                              //If disabled, make the controls revert to the world. It will go right
+                                              //away to the hovered over country if the mouse is over a country
                                               hovered_over_country = "World";
                                               previous_hovered_country = hovered_over_country;
                                               update_fuel_sunburst("sunburst_g", fuel_sunburst, hovered_over_country);
@@ -208,7 +210,8 @@ d3.json("js/maps/modified_map.json",
                                     //Get the path object the mouse is currently over it
                                     selectedCountry = this;
 
-                                    //highlight the country by decreasing its opacity
+                                    //highlight the country by circling it in white. Do so only if no country is locked on
+                                    //so that we keep locked on country the only white one.
                                     if(country_lock == false)
                                     {
                                         d3.select(selectedCountry)
@@ -250,12 +253,15 @@ d3.json("js/maps/modified_map.json",
                                 d3.select(selectedCountry).style("stroke", "grey").style("stroke-width", "0.25px");
                             }
                         })
-                    .on("click",//When the mouse is out of a country
+                    .on("click",//When the mouse clicked over a country, lock that country
                         function()
                         {
                             country_lock = true;
                             selectedCountry = this;
 
+                            //To prevent multiple countries displayed as selected, make sure that we are selecting
+                            //a new country, then unselect (the white belt turns back to grey) the last selected country
+                            // and select the newly clicked on country
                             if (locked_over_country != selectedCountry)
                             {
                                 d3.select(locked_over_country)
@@ -269,7 +275,7 @@ d3.json("js/maps/modified_map.json",
                                 locked_over_country = selectedCountry;
                             }
 
-
+                            //Update the meters
                             update_fuel_sunburst("sunburst_g", fuel_sunburst, hovered_over_country);
                             update_radar_chart( "fuel_radar", fuel_radar_cfg, hovered_over_country);
                             update_country_profile(hovered_over_country);
@@ -1088,7 +1094,7 @@ function update_country_profile(country)
     country_emissions_perc = data.total_emissions*100.0/world_total_emissions;
     d3.selectAll("#cp_emssions_perc").text( (country_emissions_perc).toFixed(1) + "%");
 
-    world_total_population = 7000000000;
+    world_total_population = 7006907989;
     country_population_perc = data.population*100.0/world_total_population;
     d3.selectAll("#cp_population_perc").text( (country_population_perc).toFixed(1) + "%");
 
