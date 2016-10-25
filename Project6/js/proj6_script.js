@@ -159,6 +159,26 @@ var emissions_scale = d3.scale.linear()
 d3.json("js/maps/modified_map.json",
         function(error, x)
         {
+            var country_lock = false;//Will be used to detect if a country is clicked. Clicked countries hold their values until a right click anywhere happens
+            var locked_over_country = {};
+
+            map_svg.on("contextmenu", function()
+                                      {//On right click, unlock country values lock and start updating on hover
+                                          if(country_lock == true)
+                                          {
+                                              d3.select(locked_over_country)
+                                                .style("stroke", "grey")
+                                                .style("stroke-width", "0.25px");
+
+                                              hovered_over_country = "World";
+                                              previous_hovered_country = hovered_over_country;
+                                              update_fuel_sunburst("sunburst_g", fuel_sunburst, hovered_over_country);
+                                              update_radar_chart( "fuel_radar", fuel_radar_cfg, hovered_over_country);
+                                              update_country_profile(hovered_over_country);
+                                          }
+
+                                          country_lock = false;
+                                      });
              map_g.append("g")
                     .attr("id", "countries")
                     //Select all is just a replacement for looping over all selected elements
@@ -189,7 +209,14 @@ d3.json("js/maps/modified_map.json",
                                     selectedCountry = this;
 
                                     //highlight the country by decreasing its opacity
-                                    d3.select(selectedCountry).style('fill-opacity', 0.6);
+                                    if(country_lock == false)
+                                    {
+                                        d3.select(selectedCountry)
+                                          .style("stroke", "white")
+                                          .style("stroke-width", "1.5px");
+
+                                          locked_over_country = selectedCountry;
+                                    }
 
                                     tooltip.classed('hidden', false)
                                         .attr('style', 'left:' + (mouse[0] + 15) +
@@ -201,8 +228,9 @@ d3.json("js/maps/modified_map.json",
                                         hovered_over_country = selectedCountry.id;
 
                                         //If the mosue has moved over a new country, to prevent flickering
-                                        //when the mouse is moving over the same country
-                                        if(hovered_over_country != previous_hovered_country)
+                                        //when the mouse is moving over the same country. And update only if
+                                        //country lock is disabled
+                                        if((hovered_over_country != previous_hovered_country) && (country_lock == false))
                                         {
                                             previous_hovered_country = hovered_over_country;
                                             update_fuel_sunburst("sunburst_g", fuel_sunburst, hovered_over_country);
@@ -217,10 +245,34 @@ d3.json("js/maps/modified_map.json",
                             tooltip.classed('hidden', true);
 
                             //Remove colouring for selected countries
-                            d3.select(selectedCountry)
-                            .style({
-                                      'fill-opacity':1
-                                   });
+                            if((country_lock == false))
+                            {
+                                d3.select(selectedCountry).style("stroke", "grey").style("stroke-width", "0.25px");
+                            }
+                        })
+                    .on("click",//When the mouse is out of a country
+                        function()
+                        {
+                            country_lock = true;
+                            selectedCountry = this;
+
+                            if (locked_over_country != selectedCountry)
+                            {
+                                d3.select(locked_over_country)
+                                .style("stroke", "grey")
+                                .style("stroke-width", "0.25px");
+
+                                d3.select(selectedCountry)
+                                          .style("stroke", "white")
+                                          .style("stroke-width", "1.5px");
+
+                                locked_over_country = selectedCountry;
+                            }
+
+
+                            update_fuel_sunburst("sunburst_g", fuel_sunburst, hovered_over_country);
+                            update_radar_chart( "fuel_radar", fuel_radar_cfg, hovered_over_country);
+                            update_country_profile(hovered_over_country);
                         });
 
         //Display the current year on the map
@@ -410,26 +462,60 @@ function draw_map_by_year(data, year)
 
 
 //WORLD EMISSIONS HISTORICAL DATA. Call the update map every 750 ms
-d3.csv("data/country_data.csv", function(data)
+
+function ShowYear(selected_year)
 {
-    country_emissions_data = data;
+    d3.csv("data/country_data.csv", function(data)
+    {
+        country_emissions_data = data;
+        draw_map_by_year(country_emissions_data, selected_year);
+    });
+}
+
+//WORLD EMISSIONS HISTORICAL DATA. Call the update map every 750 ms
+function StartAnimation()
+{
     //Do the animation
     var start_year = 1990;
     var end_year = 2011;
     var current_year = 1990;
 
-    var year_interval_mapping = setInterval(function()
-                                            {
-                                                draw_map_by_year(country_emissions_data,
-                                                             current_year);
-                                                current_year++;
-                                                if(current_year > end_year)
+    d3.csv("data/country_data.csv", function(data)
+    {
+        country_emissions_data = data;
+        var year_interval_mapping = setInterval(function()
                                                 {
-                                                    clearInterval(year_interval_mapping);
-                                                }
-                                            },
-                                            750);
-});
+                                                    draw_map_by_year(country_emissions_data,
+                                                                 current_year);
+                                                    current_year++;
+
+                                                    if(current_year > end_year)
+                                                    {
+                                                        clearInterval(year_interval_mapping);
+                                                        hidden_divs = d3.selectAll(".hidden_at_start")//.style("visibility", "visible");
+                                                        hidden_divs.style("visibility", "visible");
+                                                        var divs_opacity=0;
+                                                        //based over http://stackoverflow.com/questions/10266432/how-to-make-a-div-appear-in-slow-motion
+                                                        function gradualDisplay()
+                                                        {
+                                                            if(divs_opacity == 1)
+                                                              {
+                                                                  clearInterval(t);
+                                                              }
+
+                                                              divs_opacity+=0.05;
+                                                              hidden_divs.style('opacity', divs_opacity)
+                                                        }
+
+                                                        var t=setInterval(gradualDisplay,50);
+                                                       // d3.selectAll("#animation_button").style("visibility", "hidden");
+                                                        var button_div = document.getElementById('button_div');
+                                                        button_div.innerHTML = '<b>Slide to Change Map Year</b>';
+                                                    }
+                                                },
+                                                1000);
+    });
+}
 
 /***********************************************************************\
 *************************************************************************

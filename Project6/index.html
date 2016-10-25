@@ -11,6 +11,7 @@
                 fill: grey;
                 fill-opacity: 1;
             }
+
             .hidden
             {
                 display: none;
@@ -44,6 +45,12 @@
                 stroke: black;
                 stroke-width : 1;
                 shape-rendering: crispEdges;
+            }
+
+            .hidden_at_start
+            {
+                visibility: hidden;
+                opacity:0;
             }
 
             .axis text
@@ -93,18 +100,48 @@
 
                         This visualization starts by an animation for each country's emissions from 1990 till 2011. All meters are set to the world's 2011 average values. When you hover with your mouse over a certain country, all metrics will reflect its 2011 values.<br><br>
 
-                        Data Source: World Bank, 2011 data
+                         <b>Data Source</b>: World Bank, 2011 data<br><br>
+
+                        <b>Constrols:</b><br>
+                         - Click Start Animation to start animating the map according to each country's total emissions.<br>
+                         - After the animation, the <b>2011</b> data will appear.<br>
+                         - Country Hovering: Hover over a country to see its value.<br>
+                         - Country Lock: Click on a country to lock its value. These values will not get changed even if you hover over another country. It will only change if you click over another country<br>
+                         - To disable Country Lock, right click anywhere on the map.<br>
+                        For reference, a slider will appear over the map to roll back the year <b>for the map only</b>. The displays will always hold <b>2011</b> data.<br>
+                         - Hover over the "Emissions Gas %" bar to see the green gas type and its percentage.
                     </p>
+                    <div class = row>
+                        <div id="slider_text_div" class="col-md-2" >
+                            <div class = row>
+                                <div class = "col-md-2">
+                                    <p> </p>
+                                </div>
+                                <div class = "col-md-10" id="button_div">
+                                    <button id="animation_button" onclick="StartAnimation()">Start Animation</button>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div id="slider_div" class="col-md-6" >
+                            <input type="range" class="hidden_at_start" id="myRange" min="1990" step="1" max="2011" value="2011" oninput=ShowYear(this.value)>
+                        </div>
+                        <div id="slider_empty_div" class="col-md-4" >
+                        </div>
+                     </div>
+                    <div class = row>
+                    <p>         </p>
+                    </div>
                 </div>
             </div>
-            <div class = row>
+            <div class = row >
                 <div id="first_column_div" class="col-md-8" >
                     <div id="world_map_div" class = row>
                     </div>
-                    <div id="country_profile_div" class = row>
+                    <div id="country_profile_div" class = "row hidden_at_start" >
                     </div>
                 </div>
-                <div id="country_radial_graphs_div" class="col-md-4" >
+                <div id="country_radial_graphs_div" class="col-md-4 hidden_at_start" >
                 </div>
             </div>
             <div class = row>
