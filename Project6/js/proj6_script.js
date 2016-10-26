@@ -585,12 +585,17 @@ function init_country_profile_g(svg_elemet)
 
     var cp_font_size = "20px"
 
+    var cp_country_name = svg_elemet.append("g").append("text").attr("x", 5)
+                                           .attr("y", 25).text("2011 Data")
+                                           .attr("font-family", "sans-serif")
+                                           .attr("font-size", "20px")
+                                           .attr("fill", "black");
     //Country name text
     var cp_country_name = svg_elemet.append("g").append("text")
                                            .attr("id", "cp_name")
                                            .attr("x", 5)
-                                           .attr("y", 55)
-                                           .text("World 2011")
+                                           .attr("y", 65)
+                                           .text("World")
                                            .attr("font-family", "sans-serif")
                                            .attr("font-size", "40px")
                                            .attr("fill", "black");
@@ -599,7 +604,7 @@ function init_country_profile_g(svg_elemet)
     var cp_country_population = svg_elemet.append("g").append("text")
                                            .attr("id", "cp_population")
                                            .attr("x", 5)
-                                           .attr("y", 90)
+                                           .attr("y", 93)
                                            .text("Population: 7 Billion")
                                            .attr("font-family", "sans-serif")
                                            .attr("font-size", cp_font_size)
@@ -609,7 +614,7 @@ function init_country_profile_g(svg_elemet)
     var cp_country_gdp = svg_elemet.append("g").append("text")
                                            .attr("id", "cp_gdp")
                                            .attr("x", 5)
-                                           .attr("y", 120)
+                                           .attr("y", 123)
                                            .text("GDP: 72.818 Trillion USD")
                                            .attr("font-family", "sans-serif")
                                            .attr("font-size", cp_font_size)
@@ -619,7 +624,7 @@ function init_country_profile_g(svg_elemet)
     //and emissions
     var cp_country_emissions_perc = svg_elemet.append("g").append("text")
                                            .attr("id", "cp_emssions_perc")
-                                           .attr("x", 355)
+                                           .attr("x", 335)
                                            .attr("y", 65)
                                            .text("")
                                            .attr("font-family", "sans-serif")
@@ -628,7 +633,7 @@ function init_country_profile_g(svg_elemet)
 
     var cp_country_population_perc = svg_elemet.append("g").append("text")
                                            .attr("id", "cp_population_perc")
-                                           .attr("x", 355)
+                                           .attr("x", 335)
                                            .attr("y", 130)
                                            .text("")
                                            .attr("font-family", "sans-serif")
@@ -687,8 +692,8 @@ function init_cp_meters(svg_elemet)
     //which it will get from the passed data.
     var arc = d3.svg.arc()
                     .startAngle(0)
-                    .innerRadius(50)
-                    .outerRadius(60)
+                    .innerRadius(60)
+                    .outerRadius(70)
                     .endAngle(function(d, i)
                               {
                                     return Math.PI * 2 * (d.value/d.maximum);
@@ -746,7 +751,7 @@ function init_cp_meters(svg_elemet)
                 .attr("y", 40 )
                 .text(function(d) { return d.unit; })
                 .style("text-anchor", "middle")
-                .style("font-size", 9)
+                .style("font-size", 11)
                 .style("fill", "black")
 
     return {cp_arc : arc}
@@ -1084,7 +1089,8 @@ function update_country_profile(country)
     gdp_text_format = get_range_in_letters(data.gdp);
 
     //Update the country name, population and gdp texts
-    d3.selectAll("#cp_name").text(country + " 2011");
+    //http://stackoverflow.com/questions/10064683/split-by-caps-in-javascript
+    d3.selectAll("#cp_name").text( (country).split(/(?=[A-Z])/).join(" "));
     d3.selectAll("#cp_population").text( "Population: " + (data.population/population_text_format.divisor).toFixed(population_text_format.decimal_points) + population_text_format.range_str);
     d3.selectAll("#cp_gdp").text( "GDP: " + (data.gdp/gdp_text_format.divisor).toFixed(gdp_text_format.decimal_points) + gdp_text_format.range_str + " US$");
 
@@ -1104,7 +1110,7 @@ function update_country_profile(country)
     //and the two texts (percentages and explanation text) become displayed one over another
     if( (country_emissions_perc < 10.0) && (country_population_perc < 10.0) )
     {
-        d3.selectAll(".cp_explaination_text").attr("transform", "translate(-20,0)");
+        d3.selectAll(".cp_explaination_text").attr("transform", "translate(-30,0)");
     }
     else
     {
@@ -1411,7 +1417,8 @@ function update_fuel_sunburst(fuel_g_id, sunburst_element, country)
                       {
                         return d.text;
                       })
-                .style('fill', 'darkOrange');
+                .attr("font-size", "14px")
+                .style('fill', 'black');
 }
 
 
@@ -1603,7 +1610,7 @@ function init_radar_axis(svg_div, svg_cfg, chart_id, radar_cfg, translate_x, tra
 
     radar_axis.append("text")
         .attr("class", "legend")
-        .style("font-size", "11px")
+        .style("font-size", "14px").attr('fill', 'black')
         .attr("text-anchor", "middle")
         .attr("dy", "0.35em")
         .attr("x", function(d, i){ return radar_cfg.r_scale(radar_cfg.axis_max * 1.1) * Math.cos(radar_cfg.axis_angle_slice*i - Math.PI/2); })
