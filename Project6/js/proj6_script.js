@@ -352,7 +352,7 @@ d3.json("js/maps/modified_map.json",
                .attr('x', 305)
                .attr('y', 2)
                .attr('fill', 'black')
-               .text("Tonnes of CO2");
+               .text("Tons of CO2");
 
         });//end of d3.json()
 
@@ -478,6 +478,10 @@ function ShowYear(selected_year)
     });
 }
 
+//A variable to stop reshowing the controls after the first animation. Not disabling this part causes a flickering
+//when the animation is redisplayed
+var first_animation_flag = false;
+
 //WORLD EMISSIONS HISTORICAL DATA. Call the update map every 750 ms
 function StartAnimation()
 {
@@ -486,6 +490,8 @@ function StartAnimation()
     var end_year = 2011;
     var current_year = 1990;
 
+    var year_slider = d3.selectAll("#year_slider");
+
     d3.csv("data/country_data.csv", function(data)
     {
         country_emissions_data = data;
@@ -493,6 +499,7 @@ function StartAnimation()
                                                 {
                                                     draw_map_by_year(country_emissions_data,
                                                                  current_year);
+                                                    year_slider.property("value", current_year);
                                                     current_year++;
 
                                                     if(current_year > end_year)
@@ -502,21 +509,26 @@ function StartAnimation()
                                                         hidden_divs.style("visibility", "visible");
                                                         var divs_opacity=0;
                                                         //based over http://stackoverflow.com/questions/10266432/how-to-make-a-div-appear-in-slow-motion
-                                                        function gradualDisplay()
+                                                        if(first_animation_flag == false)
                                                         {
-                                                            if(divs_opacity == 1)
-                                                              {
-                                                                  clearInterval(t);
-                                                              }
+                                                            function gradualDisplay()
+                                                            {
+                                                                if(divs_opacity == 1)
+                                                                  {
+                                                                      clearInterval(t);
+                                                                  }
 
-                                                              divs_opacity+=0.05;
-                                                              hidden_divs.style('opacity', divs_opacity)
+                                                                  divs_opacity+=0.05;
+                                                                  hidden_divs.style('opacity', divs_opacity)
+                                                            }
+
+                                                            var t=setInterval(gradualDisplay,50);
+                                                           // d3.selectAll("#animation_button").style("visibility", "hidden");
+                                                            //var button_div = document.getElementById('button_div').text(animation_button);
+                                                            d3.selectAll("#animation_button").text("Restart Animation")
+                                                            //button_div.innerHTML = '<b>Slide to Change Map Year</b>';
+                                                            first_animation_flag = true;
                                                         }
-
-                                                        var t=setInterval(gradualDisplay,50);
-                                                       // d3.selectAll("#animation_button").style("visibility", "hidden");
-                                                        var button_div = document.getElementById('button_div');
-                                                        button_div.innerHTML = '<b>Slide to Change Map Year</b>';
                                                     }
                                                 },
                                                 1000);
@@ -566,7 +578,7 @@ function get_country_profile_data(country_name)
 
     hierarchical_data = [
                         {name: "gdp_per_capita", text: "GDP Per Capita", unit: "US$/Capita", value: data.gdp_per_capita, maximum : 101000},
-                        {name: "co2_per_capita", text: "CO2 Per Capita", unit: "Tonnes/Capita", value: data.co2_per_capita, maximum : 44},
+                        {name: "co2_per_capita", text: "CO2 Per Capita", unit: "Tons/Capita", value: data.co2_per_capita, maximum : 44},
                         {name: "emissions_productivity", text: "Emissions Productivity", unit: "US$/T of CO2", value: emissions_productivity, maximum : 8000000},
                         {name: "total_emissions", text: "Total Emissions", unit: "kT of CO2 Eq.", value: data.total_emissions, maximum : 12064260},
 
@@ -717,6 +729,10 @@ function init_cp_meters(svg_elemet)
                                                 {
                                                     return inverse_meter_color_scale(d.value/d.maximum);
                                                 }
+                                                else if (d.name == "total_emissions")
+                                                {
+                                                    return emissions_scale(d.value);
+                                                }
                                                 else
                                                 {
                                                     return meter_color_scale(d.value/d.maximum);
@@ -800,6 +816,10 @@ function update_cp_meters(svg_elemet, country, meters)
                             if (d.name == "gdp_per_capita" || d.name == "emissions_productivity")
                             {
                                 return inverse_meter_color_scale(d.value/d.maximum);
+                            }
+                            else if (d.name == "total_emissions")
+                            {
+                                return emissions_scale(d.value);
                             }
                             else
                             {
@@ -891,7 +911,7 @@ function init_stacked_emissions_gases(svg_elem)
                           .rangeRoundBands([0, 10], .1);
 
     var y_stack_scale = d3.scale.linear()
-                          .rangeRound([cp_svg_cfg.height - 30, 30]);
+                          .rangeRound([cp_svg_cfg.height - 50, 30]);
 
     var gases_stack_color = d3.scale.category20();
 
@@ -959,16 +979,31 @@ function init_stacked_emissions_gases(svg_elem)
                                       'fill-opacity': 1
                                    });
                         });
-
+/*
     svg_elem.append("g")
             .attr("class", ".axis")
             .attr("transform", "translate(" + axis_x_position + ", " + axis_y_position + " )")
             .call(x_axis_stack)
             .append("text")
-            .attr("x", -10)
-            .attr("y", 285)
-            .text("Emissions Gas %")
+            .attr("x", 0)
+            .attr("y", 265)
+            .attr("dy", "0em")
+            .text("Emissions")
+            .attr("fill", 'black')
+            .append("text")
+            .attr("dy", "0em")
+            .text("Composition")
             .attr("fill", 'black');
+*/
+    //http://stackoverflow.com/questions/13241475/how-do-i-include-newlines-in-labels-in-d3-charts
+    var myLabel = svg_elem.append('foreignObject')
+                          .attr({
+                              height: 50,
+                              width: 95, // dimensions determined based on need
+                              transform: 'translate(' + (axis_x_position ) + ', ' + (axis_y_position + cp_svg_cfg.height - 45)  + ')' // put it where you want it...
+                           })
+                           .html('<div><p><center>Emitted Gases Composition</center></p></div>');
+
 }
 
 //Update the stacked emissions bars. Called when a new country is hovered over
@@ -981,7 +1016,7 @@ function update_stacked_emissions_gases(svg_elem, country)
                           .rangeRoundBands([0, 10], .1);
 
     var y_stack_scale = d3.scale.linear()
-                          .rangeRound([cp_svg_cfg.height - 30, 30]);
+                          .rangeRound([cp_svg_cfg.height - 50, 30]);
 
     //Update data
     stacked_data = get_emission_gases_stacked_data(country);
@@ -1179,7 +1214,7 @@ function get_fuel_data(world_data, country_name)
     }
     else
     {
-        renewable_text = "Renewable"
+        renewable_text = "Green"
     }
 
     if(data.electricity_from_coal == 0)
@@ -1304,7 +1339,7 @@ function init_fuel_sunburst()
                                          });
 
     var fuel_colors =  {
-                            "fuel_data": "black",
+                            "fuel_data": "honeydew",// "white",
                             "Fossil Fuel": "red",
                                 "Coal": "#4d0000",
                                 "Oil": "#eb0000",
@@ -1369,6 +1404,10 @@ function init_sunburst_g(svg_elemet, sunburst_elem, fill_data)
                                  })
                    .each(save_vals)
 
+    var text_color = d3.scale.ordinal()
+                             .domain(["Fossil Fuel", "Nuclear Energy", "Renewable Energy", "Coal", "Oil", "Gas", "HydroElectricity", "Other Renewables"] )
+                             .range([  "khaki", "black", "white", "khaki", "khaki","khaki", "white", "white"]);
+
     fuel_sunburst_g.selectAll("text")
                 .data(sunburst_elem.partitions.nodes(fill_data))
                 .enter()
@@ -1379,15 +1418,17 @@ function init_sunburst_g(svg_elemet, sunburst_elem, fill_data)
                                     })
                 .attr("x", function(d)
                                     {
-                                        return sunburst_elem.y_scale(d.y);
+                                        return sunburst_elem.y_scale(d.y) - 30;
                                     })
                 .attr("dx", "1") // margin
                 .attr("dy", ".35em") // vertical-align
-                .attr("font-size", "11")
+                .attr("font-size", "14")
                 .text(function(d)
                       {
-                        return d.name;
-                      });
+                        return d.text;
+                      })
+
+                .style('fill', function(d,i) { return text_color(d.name);} );
 }
 
 function update_fuel_sunburst(fuel_g_id, sunburst_element, country)
@@ -1402,6 +1443,10 @@ function update_fuel_sunburst(fuel_g_id, sunburst_element, country)
                                   .transition()
                                   .duration(450)
                                   .attrTween("d", sunburstArcTween);
+
+    var text_color = d3.scale.ordinal()
+                             .domain(["Fossil Fuel", "Nuclear Energy", "Renewable Energy", "Coal", "Oil", "Gas", "HydroElectricity", "Other Renewables"] )
+                             .range([  "khaki", "black", "white", "khaki", "khaki","khaki", "white", "white"]);
 
     var text = fuel_g.selectAll("text")
                 .data(sunburst_element.partitions.nodes(sunburst_fuel_data))
@@ -1418,7 +1463,7 @@ function update_fuel_sunburst(fuel_g_id, sunburst_element, country)
                         return d.text;
                       })
                 .attr("font-size", "14px")
-                .style('fill', 'black');
+                .style('fill', function(d,i) { return text_color(d.name);} );
 }
 
 
@@ -1635,12 +1680,13 @@ function init_radar_axis(svg_div, svg_cfg, chart_id, radar_cfg, translate_x, tra
            .attr("x", 4)
            .attr("y", function(d){return -radar_cfg.r_scale(d * radar_cfg.tick_factor); })
            .attr("dy", "0.4em")
-           .style("font-size", "10px")
+           .style("font-size", "11px")
+           .style("stroke", "black")
            .attr("fill", "grey")
            .text(function(d,i) { return d3.format('%')(d/10); });
 
     var radarLine = d3.svg.line.radial()
-                               .interpolate("cardinal-closed")//"cardinal-closed" to make edges smoother
+                               .interpolate("linear-closed")//"cardinal-closed" to make edges smoother
                                .radius(function(d) {  return radar_cfg.r_scale(d.value); })
                                .angle(function(d,i) {  return i * radar_cfg.axis_angle_slice; });
 
@@ -1652,7 +1698,7 @@ function init_radar_axis(svg_div, svg_cfg, chart_id, radar_cfg, translate_x, tra
                             .attr("id", chart_id);
 
     var color = d3.scale.ordinal()
-                .range(["green","Blue","#00A0B0"]);
+                .range(["#f44343","Blue","#00A0B0"]);
 
     radarChart.append("path")
               .attr("class", "radarArea")
@@ -1660,7 +1706,7 @@ function init_radar_axis(svg_div, svg_cfg, chart_id, radar_cfg, translate_x, tra
               .style("stroke", function(d,i) { return color(i); })
               .style("stroke-width", "1px")
               .style("fill", function(d,i) { return color(i);} )
-              .style("fill-opacity", function(d,i) { return 0.7 - (i*0.5);})
+              .style("fill-opacity", function(d,i) { return 0.8 - (i*0.5);})
 
 }
 
@@ -1670,8 +1716,8 @@ function update_radar_chart(chart_id, radar_cfg, country_name)
     update_fuel_stacked_data(country_name);
 
     var radarLine = d3.svg.line.radial()
-                       //.interpolate("linear-closed")//"cardinal-closed" to make edges smoother
-                       .interpolate("cardinal-closed")
+                       //"cardinal-closed" to make edges smoother
+                       .interpolate("linear-closed")
                        .radius(function(d) {  return radar_cfg.r_scale(d.value); })
                        .angle(function(d,i) {  return i * radar_cfg.axis_angle_slice; });
 

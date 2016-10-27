@@ -103,15 +103,19 @@
                          <b>Data Source</b>: World Bank, 1990-2011 data<br>
                          1- <a href="http://climate.nasa.gov/scientific-consensus/" target="_blank">NASA - Climate Change: Vital Signs of the Planet: Scientific Consensus</a><br><br>
 
-                         <b>Abbreviations Used</b>:<br>
-                          - kT of CO2 Eq. : Kilo Tonnes (1000 metric tonnes) of CO2 equivalent.<br><br>
+                          <h3>Guideline:</h3>
+                           - In the "2011 Electricity Generation by Source" graphic, the section named "Green" represents renewable energy sources.<br>
+                           - The radial meters below the map (GDP Per Capita, CO2 Per Capita, Emissions Productivity and Total Emissions), their fill is logarithmic and not linear. Their maximum is adjusted to a country that has a high value but not the highest. This was to stop exceptionally high values from dwarfing the majority of low scoring countries over that scale. Also, the meters are color-coded to reflect the value, with green meaning a desirable value and red meaning the opposite.<br><br>
 
-                        <b>Controls:</b><br>
+                           <h3>Abbreviations Used:</h3>
+                          - kT of CO2 Eq. : Kilo Tons (1000 metric tons) of CO2 equivalent.<br><br>
+
+                        <h3>Controls:</h3>
                          - To view changes in emissions from 1990 to 2011, click <b>Start Animation</b>.<br>
                          - After the animation, the <b>2011</b> data will appear.<br>
                          - To see detailed information about a specific country, you can either <b>click</b> or <b>hover</b> over it. Clicking on a country locks its values, meaning that they will not change even if you hover over another country. To deselect a country, <b>right click</b> anywhere on the map.<br>
                          - For reference, a slider will appear over the map to roll back the year <b>for the map only</b>. The displays will always hold <b>2011</b> data.<br>
-                         - Hover over the "Emissions Gas %" bar to see the green gas type and its percentage.
+                         - Hover over the "Emitted Gases Composition" bar to see the greenhouse gas type and its percentage.
                     </p>
                     <div class = row>
                         <div id="slider_text_div" class="col-md-2" >
@@ -126,7 +130,7 @@
 
                         </div>
                         <div id="slider_div" class="col-md-6" >
-                            <input type="range" class="hidden_at_start" id="myRange" min="1990" step="1" max="2011" value="2011" oninput=ShowYear(this.value)>
+                            <input type="range" class="hidden_at_start" id="year_slider" min="1990" step="1" max="2011" value="2011" oninput=ShowYear(this.value)>
                         </div>
                         <div id="slider_empty_div" class="col-md-4" >
                         </div>
