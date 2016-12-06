@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+            path
+            {
+                stroke: white;
+                stroke-width: 0.25px;
+                fill: grey;
+                fill-opacity: 1;
+            }
+
+            .hidden
+            {
+                display: none;
+            }
+            div.tooltip
+            {
+                color: #222;
+                background-color: #fff;
+                padding: .5em;
+                text-shadow: #f5f5f5 0 1px 0;
+                border-radius: 2px;
+                opacity: 0.9;
+                position: absolute;
+            }
+            .country_bubble
+            {
+                stroke: #000;
+            }
+
+            .axis path
+            {
+                /* display: none; */
+                fill: none;
+                fill-opacity: 0.8;
+                stroke-width : 1px;
+                shape-rendering: crispEdges;
+            }
+
+            .axis line /*The ticks on the axis*/
+            {
+                stroke: black;
+                stroke-width : 1;
+                shape-rendering: crispEdges;
+            }
+
+            .hidden_at_start
+            {
+                visibility: hidden;
+                opacity:0;
+            }
+
+            .axis text
+            {
+                font-family: sans-serif;
+                font-size: 11px;
+                color: black;
+            }
+
+            path.domain
+            {
+                stroke: black;
+              }
+
+            .tick text /*http://stackoverflow.com/questions/12057145/d3-js-axis-labels-color-not-changing*/
+            {
+                font-family: sans-serif;
+                font-size: 11px;
+                fill: black;
+            }
+
+
+        </style>
+        <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+        <title>
+            Exploring World Emissions
+        </title>
+        <script src="https://d3js.org/d3.v3.min.js"></script>
+        <script src="https://d3js.org/topojson.v1.min.js"></script>
+    </head>
+    <body>
+       <div class="container">
+            <div id="title" class="row">
+                <h1 class="title">Getting to Know the World's Emissions</h1>
+            </div>
+            <div id="intro" class="row">
+                <div class="row">
+                    <h3>Intro</h3>
+                </div>
+                <div class="row">
+                    <p>
+                        Global warming is considered a threat to humanity. The consequences of substantial climate change include food shortages, rising sea level and the inundation of densly populated areas and unexpected weather shifts like droughts and floods in areas that were considered safe to these risks in the past. For a lot of today's scientists<sup>1</sup> , human activity is a direct cause to these changes. The greenhouse gases emissions are the ones to blame, to be precise. It is arguably cheaper on the long run to reduce the amount of emissions than to deal with these consequences, like having to relocate all the world's current population that live in coastal areas.<br><br>
+
+                        But as much as it is a global problem, there might not be a global solution: each country produces emissions for different reasons. Some countries like China have a great deal of their emissions coming out from manufacturing, while for cold countries like Russia, the majority of the emissions are a result of heating and electricity generation. But the common factor for the majority of the nations is that, unsurprisingly, electricity generation is the major source for emissions.<br><br>
+
+                        In this visualization, I invite you to explore which sectors are responsible for the emissions in each country - probably the most interesting one is going to be yours. Given the important role for power generation in producing national emissions, a breakdown for the different power sources energizing the national grid is displayed.<br><br>
+
+                        <h4>This visualization allows the exploration of the emissions from three different points of view:</h4>
+                         - Total emissions by country<br>
+                         - Emission per capita by country<br>
+                         - Emissions productivity by country<br><br>
+
+                         There are a few interesting things to be noticed within each of these categories:<br><br>
+                         For the total emissions, and this is the most addressed part in the media, China and the USA are the most emitting nations. Europe is mixed, but mostly not too bad, the Middle East's gulf states are either medium or low emitting and Africa is mostly green. Brazil Russia and India here are shown to be emitting a lot, but not the highest.<br><br>
+                         When we move to the CO2 per capita metric, the map changes. China and the USA are not the highest anymore, it is actually the Middle East's gulf states that scored the highest. These nations' economies are build over oil, and besides that they burn a lot of fuel to desalinate sea water - a highly energy intensive process. Africa becomes even greener. India and Brazil turn green here.<br><br>
+                         Finally, the emissions productivity: It is simply the GDP divided by the total emissions. Emissions are basically vital to sustain the human activity, but is everyone using it at least in a way that is generating good profits per emission unit? The map changes a lot in this view. Western and Northern Europe become the green leaders of the world in this view, and Africa turns red. Japan turns green in this metric as well.<br><br>
+
+                         <h4>Other Interesting Things to Discover:</h4>
+                         - Check South Africa. It stands out because its colour is dark for its emissions. It turns out that they mostly coal to generate power, and probably this is the reason why it is emitting that much.<br>
+                         - Democratic Republic of Congo: This one may appear at the beginning as a puzzle. It emitts a lot, but all of its power comes from green sources! After some research, the most convincing answer I got was that this immense emission is coming from deforestation. The trees' decay emits a lot of greenhouse gases.<br>
+                         - Countries whose power is generated mostly from green sources (Like Iceland, Democratic Republic of Congo and Brazil) have an interesting form for their fossil fuel consumption radar chart: the largest spike is along the axis of transportation. That makes sense, since after power generation, probably burning fuel to move around would be the second reason why fossil fuel is used.<br><br>
+
+                         <b>Data Source</b>: World Bank, 1990-2011 data<br>
+                         1- <a href="http://climate.nasa.gov/scientific-consensus/" target="_blank">NASA - Climate Change: Vital Signs of the Planet: Scientific Consensus</a><br><br>
+
+                          <h3>Guideline:</h3>
+                           - In the "2011 Electricity Generation by Source" graphic, the section named "Green" represents renewable energy sources.<br>
+                           - The radial meters below the map (GDP Per Capita, CO2 Per Capita, Emissions Productivity and Total Emissions), their fill is logarithmic and not linear. Their maximum is adjusted to a country that has a high value but not the highest. This was to stop exceptionally high values from dwarfing the majority of low scoring countries over that scale. Also, the meters are color-coded to reflect the value, with green meaning a desirable value and red meaning the opposite.<br><br>
+
+                           <h3>Abbreviations Used:</h3>
+                          - kT of CO2 Eq. : Kilo Tons (1000 metric tons) of CO2 equivalent.<br><br>
+
+                        <h3>Controls:</h3>
+                         - Through the radio buttons, choose the colour scheme you prefer for the map. The gradient one is colour-blind friend, besides it allows easier noticing for the subtler changes in values.<br>
+                         - Through the other set of the radio buttons, choose the metric you want the map to display. Notice that for the last metric (Emissions Productivity), the colours are inverted, i.e. the green means highest and red means lowest, since a higher value here is considered better.<br>
+                         - To see detailed information about a specific country, you can either <b>click</b> or <b>hover</b> over it. Clicking on a country locks its values, meaning that they will not change even if you hover over another country. To deselect a country, <b>right click</b> anywhere on the map.<br>
+                         - Hover over the "Emitted Gases Composition" bar to see the greenhouse gas type and its percentage.
+                    </p>
+                    <div class = row>
+                        <div id="slider_text_div" class="col-md-2" >
+                            <div class = row>
+                                <div class = "col-md-2">
+                                    <p> </p>
+                                </div>
+                                <div class = "col-md-10" id="button_div">
+                                    <!-- <button id="animation_button" onclick="StartAnimation()">Start Animation</button> -->
+                                    <form>
+                                        <input type="radio" id = "map_radio_option" name="map_colour_radio" value="rainbow" checked> Rainbow Colouring<br>
+                                        <input type="radio" id = "map_radio_option" name="map_colour_radio" value="gradient"> Gradient Colouring<br>
+                                    </form>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div id="slider_div" class="col-md-6" >
+                            <!-- <input type="range" class="hidden_at_start" id="year_slider" min="1990" step="1" max="2011" value="2011" oninput=ShowYear(this.value)> -->
+                            <form>
+                                <input type="radio" id = "map_radio_option" name="metric_radio" value="total_co2" checked> Total CO2 Emissions<br>
+                                <input type="radio" id = "map_radio_option" name="metric_radio" value="co2_per_capita"> CO2 per capita<br>
+                                <input type="radio" id = "map_radio_option" name="metric_radio" value="emissions_productivity"> Emissions Productivity<br>
+                            </form>
+                        </div>
+                        <div id="slider_empty_div" class="col-md-4" >
+                        </div>
+                     </div>
+                    <div class = row>
+                    <p>         </p>
+                    </div>
+                </div>
+            </div>
+            <div class = row >
+                <div id="first_column_div" class="col-md-8" >
+                    <div id="world_map_div" class = row>
+                    </div>
+                    <div id="country_profile_div" class = "row hidden_at_start" >
+                    </div>
+                </div>
+                <div id="country_radial_graphs_div" class="col-md-4 hidden_at_start" >
+                </div>
+            </div>
+            <div class = row>
+                <div id= "tagarob_div" class="col-lg-12" >
+                </div>
+            </div>
+            <div class = row>
+                <div id= "padding" class="col-md-8" >
+                </div>
+            </div>
+        </div>
+        <script src="js/proj6_script.js"></script>
+        <script src="js/jquery-3.1.1.min.js"></script>
+    </body>
+</html>
